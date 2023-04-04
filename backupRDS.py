@@ -4,6 +4,7 @@
 # file: rds_backup.py
 # author: qinxi
 # email: 1023495336@qq.com
+
 import os
 import datetime
 import logging
@@ -27,6 +28,7 @@ def mkdir(dir):
 
 # 获取当前时间
 now = datetime.datetime.now().strftime('%Y%m%d%H%M')
+now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def rm_file(dir_path):
     # 获取当前时间
@@ -111,10 +113,12 @@ try:
 
                 # 记录备份日志
                 logger.info(f"Backup {database_name}.{table_name} to {backup_full_path} success.")
+                print(f"{now_time} Backup {database_name}.{table_name} to {backup_full_path} success.")
 
             except Exception as e:
                 # 记录备份失败日志
                 logger.error(f"Backup {database_name}.{table_name} to {backup_full_path} failed.")
+                print(f"{now_time} Backup {database_name}.{table_name} to {backup_full_path} failed.")
                 logger.error(f"Error occurred: {e}")
                 logger.error(traceback.format_exc())
 
@@ -128,7 +132,7 @@ try:
 
     # 记录备份完成日志
     logger.info(f"Backup finished. The compressed backup file is saved in {os.path.join(backup_path, backup_tarfile)}")
-
+    print(f"{now_time} Backup finished. The compressed backup file is saved in {os.path.join(backup_path, backup_tarfile)}")
     # 清除两天前的备份，释放磁盘空间
     if backup_path:
        rm_file(backup_path)
@@ -137,6 +141,8 @@ except Exception as e:
     # 记录异常日志
     logger.error(f"Error occurred: {e}")
     logger.error(traceback.format_exc())
-
+    
+    
+    
     
     
