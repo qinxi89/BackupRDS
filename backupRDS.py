@@ -4,10 +4,10 @@
 # file: rds_backup.py
 # author: qinxi
 # email: 1023495336@qq.com
-
 import os
 import datetime
 import logging
+import shutil
 import time
 
 import pymysql
@@ -16,9 +16,9 @@ import traceback
 
 # 阿里云RDS数据库连接配置
 rds_config = {
-    'host': 'rm-*********.mysql.zhangbei.rds.aliyuncs.com',
-    'user': '*****',
-    'password': 'd4********#PR',
+    'host': 'rm-8vbju83hjm94u4i56.mysql.zhangbei.rds.aliyuncs.com',
+    'user': 'backup',
+    'password': 'd4#pmiVrzphDC#PR',
     'port': 3306,
 }
 
@@ -34,22 +34,21 @@ def rm_file(dir_path):
     # 获取当前时间
     current_time = time.time()
 
-    # 遍历目录中的文件
+    # 遍历目录中的文件夹
     for file in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file)
-        # 获取文件的修改时间
+        # 获取文件夹的修改时间
         mod_time = os.path.getmtime(file_path)
-        # 计算文件的年龄
+        # 计算文件夹的年龄
         file_age = current_time - mod_time
         # 如果文件的年龄超过两天（单位为秒）
         if file_age > 2 * 24 * 60 * 60:
-            # 删除文件
-            os.remove(file_path)
+            # 删除文件夹
+            shutil.rmtree(file_path)
             time.sleep(0.1)
             print('正在删除：',file_path)
 
 current_date = datetime.datetime.now().strftime('%Y-%m-%d-%H')
-# yesterday_date = '{}'.format((datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d-%H'))
 
 # 备份文件保存路径
 backup_path = '/data/RDSbackup/' + current_date + '/'
@@ -133,16 +132,15 @@ try:
     # 记录备份完成日志
     logger.info(f"Backup finished. The compressed backup file is saved in {os.path.join(backup_path, backup_tarfile)}")
     print(f"{now_time} Backup finished. The compressed backup file is saved in {os.path.join(backup_path, backup_tarfile)}")
+
     # 清除两天前的备份，释放磁盘空间
     if backup_path:
-       rm_file(backup_path)
+       rm_file('/data/RDSbackup/')
 
 except Exception as e:
     # 记录异常日志
     logger.error(f"Error occurred: {e}")
     logger.error(traceback.format_exc())
-    
-    
     
     
     
